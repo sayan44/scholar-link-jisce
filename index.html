@@ -100,7 +100,9 @@
           <li role="none"><a href="#about" class="nav-link" role="menuitem">About</a></li>
           <li role="none"><a href="#domains" class="nav-link" role="menuitem">Domains</a></li>
           <li role="none"><a href="#featured" class="nav-link" role="menuitem">Featured Papers</a></li>
+          <li role="none"><a href="#top-cited" class="nav-link" role="menuitem">Top Cited</a></li>
           <li role="none"><a href="#resources" class="nav-link" role="menuitem">Resources</a></li>
+          <li role="none"><a href="#committee" class="nav-link" role="menuitem">Committee</a></li>
           <li role="none"><a href="#contact" class="nav-link" role="menuitem">Contact</a></li>
         </ul>
 
@@ -249,11 +251,13 @@
       <div class="domain-filter-controls">
         <div class="domain-search-wrapper">
           <i class="fas fa-search domain-search-icon"></i>
-          <input type="text" id="domain-select-search" placeholder="Search research domains (e.g., medical, power, vlsi)..." aria-label="Search domains" />
+          <input type="text" id="domain-select-search"
+            placeholder="Search research domains (e.g., medical, power, vlsi)..." aria-label="Search domains" />
         </div>
 
         <!-- Category Filter Bar -->
-        <div class="category-filter-bar" id="category-filter-bar" role="tablist" aria-label="Filter domains by category">
+        <div class="category-filter-bar" id="category-filter-bar" role="tablist"
+          aria-label="Filter domains by category">
           <button class="category-filter-btn active" data-category="all" role="tab" aria-selected="true">
             <i class="fas fa-th"></i> All Categories
           </button>
@@ -296,7 +300,8 @@
             <span class="domain-paper-count" id="domain-paper-count">3</span>
             <span>Papers</span>
           </div>
-          <button class="btn btn-secondary back-to-domains-btn" id="back-to-domains-top-btn" aria-label="Back to domains list">
+          <button class="btn btn-secondary back-to-domains-btn" id="back-to-domains-top-btn"
+            aria-label="Back to domains list">
             <i class="fas fa-arrow-up"></i> Back to Domains
           </button>
         </div>
@@ -315,7 +320,7 @@
         <div class="papers-grid" id="papers-grid">
           <!-- Papers injected by JS -->
         </div>
-        
+
         <!-- Action Row under Papers -->
         <div class="papers-action-row">
           <button class="btn btn-secondary back-to-domains-btn" id="back-to-domains-bottom-btn">
@@ -354,6 +359,35 @@
 
       <!-- Carousel Dots -->
       <div class="carousel-dots" id="carousel-dots" role="group" aria-label="Carousel navigation dots"></div>
+    </div>
+  </section>
+
+  <!-- ==================== TOP CITED PAPERS SECTION ==================== -->
+  <section id="top-cited" class="top-cited-section section" aria-labelledby="top-cited-heading">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">Impact</span>
+        <h2 id="top-cited-heading" class="section-title">Top Cited Papers</h2>
+        <div class="section-divider"></div>
+        <p class="section-description">Explore highly cited research publications from JIS College of Engineering ranked
+          by citation count.</p>
+      </div>
+
+      <div class="top-cited-controls">
+        <div class="top-cited-limit-wrapper">
+          <label for="top-cited-limit-select"><i class="fas fa-list-ol"></i> Show Top:</label>
+          <select id="top-cited-limit-select" class="top-cited-select" aria-label="Select limit for top cited papers">
+            <option value="50">Top 50 Papers</option>
+            <option value="100" selected>Top 100 Papers</option>
+            <option value="250">Top 250 Papers</option>
+            <option value="all">All Papers</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="top-cited-grid" id="top-cited-grid">
+        <!-- Injected dynamically by JS -->
+      </div>
     </div>
   </section>
 
@@ -487,6 +521,190 @@
     </div>
   </section>
 
+  <!-- ==================== COMMITTEE SECTION ==================== -->
+  <section id="committee" class="committee-section section" aria-labelledby="committee-heading">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">Leadership</span>
+        <h2 id="committee-heading" class="section-title">Research Progress Committee</h2>
+        <div class="section-divider"></div>
+        <p class="section-description">Sincere gratitude to the leadership and members of the RPC for their guidance and
+          support.</p>
+      </div>
+
+      <!-- Inception Acknowledgment Banner -->
+      <div class="principal-acknowledgment glass-card">
+        <div class="ack-icon">
+          <i class="fas fa-award"></i>
+        </div>
+        <div class="ack-content">
+          <h3>Inception &amp; Vision</h3>
+          <p class="ack-quote">
+            "A special expression of gratitude is extended to <strong>Prof. Dr. Partha Sarkar</strong>, Principal, JIS
+            College of Engineering, for conceiving the brilliant idea and vision behind the establishment of the
+            <strong>Citation Club</strong>, which has significantly enhanced our academic research visibility."
+          </p>
+          <span class="ack-author">— Principal, JIS College of Engineering</span>
+        </div>
+      </div>
+
+      <!-- Committee Members Grid -->
+      <div class="committee-grid">
+
+        <!-- Member 1 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Shyam Sundar Santra</h3>
+            <p class="member-designation">Associate Dean (R&D), JISCE</p>
+            <span class="member-role convener"><i class="fas fa-star"></i> Convener, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 2 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Anal Ranjan Sengupta</h3>
+            <p class="member-designation">Assistant Professor, Department of Mechanical Engineering (ME), JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 3 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Anirban Patra</h3>
+            <p class="member-designation">Assistant Professor, Department of Electronics and Communication Engineering
+              (ECE), JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 4 -->
+        <article class="committee-card glass-card developer-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-cog"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Sayan Chakraborty</h3>
+            <p class="member-designation">Assistant Professor, Department of Computer Science and Technology (CST) &amp;
+              CSE (Artificial Intelligence and Machine Learning), JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 5 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Sumit Das</h3>
+            <p class="member-designation">Associate Professor, Department of Information Technology (IT), JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 6 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Mrs. Gargi Roy</h3>
+            <p class="member-designation">Assistant Professor, Department of Electrical Engineering (EE), JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 7 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Dibyendu Mandal</h3>
+            <p class="member-designation">Assistant Professor, Department of Biomedical Engineering (BME), JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 8 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Nabanita Sarkar</h3>
+            <p class="member-designation">Head of the Department, Agricultural Engineering (AGE); Assistant Professor,
+              Department of AGE, JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 9 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Bidyut Sarkar</h3>
+            <p class="member-designation">Assistant Professor, Department of Basic Sciences and Humanities (BSHU), JISCE
+            </p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 10 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Mr. Sohom Majumder</h3>
+            <p class="member-designation">Assistant Professor, Department of Business Administration (BA), JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 11 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Amrita Namtirtha</h3>
+            <p class="member-designation">Assistant Professor, Department of Computer Science and Engineering (CSE),
+              JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+        <!-- Member 12 -->
+        <article class="committee-card glass-card">
+          <div class="member-avatar">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">Dr. Alok Kumar Shrivastav</h3>
+            <p class="member-designation">Head of the Department, Electrical Engineering (EE); Assistant Professor,
+              Department of EE, JISCE</p>
+            <span class="member-role"><i class="fas fa-check-circle"></i> Member, RPC</span>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
   <!-- ==================== CONTACT SECTION ==================== -->
   <section id="contact" class="contact-section section" aria-labelledby="contact-heading">
     <div class="section-container">
@@ -546,48 +764,26 @@
           </div>
         </div>
 
-        <!-- Contact Form -->
-        <div class="contact-form-wrapper glass-card" id="contact-form-card">
-          <h3>Send a Message</h3>
-          <form id="contact-form" novalidate>
-            <div class="form-group">
-              <label for="contact-name">Full Name</label>
-              <input type="text" id="contact-name" name="name" placeholder="Your full name" required
-                autocomplete="name" />
-              <span class="form-error" id="name-error" role="alert"></span>
-            </div>
-            <div class="form-group">
-              <label for="contact-email">Email Address</label>
-              <input type="email" id="contact-email" name="email" placeholder="your@email.com" required
-                autocomplete="email" />
-              <span class="form-error" id="email-error" role="alert"></span>
-            </div>
-            <div class="form-group">
-              <label for="contact-subject">Subject</label>
-              <select id="contact-subject" name="subject" required>
-                <option value="" disabled selected>Select a topic</option>
-                <option value="research">Research Collaboration</option>
-                <option value="citation">Citation Query</option>
-                <option value="paper">Paper Submission</option>
-                <option value="membership">Club Membership</option>
-                <option value="other">Other</option>
-              </select>
-              <span class="form-error" id="subject-error" role="alert"></span>
-            </div>
-            <div class="form-group">
-              <label for="contact-message">Message</label>
-              <textarea id="contact-message" name="message" rows="5" placeholder="Write your message here..."
-                required></textarea>
-              <span class="form-error" id="message-error" role="alert"></span>
-            </div>
-            <button type="submit" class="btn btn-primary btn-submit" id="submit-btn">
-              <i class="fas fa-paper-plane"></i> Send Message
-            </button>
-            <div id="form-success" class="form-success hidden" role="alert">
-              <i class="fas fa-check-circle"></i> Message sent successfully! We'll get back to you soon.
-            </div>
-          </form>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== VISITOR COUNTER ==================== -->
+  <section class="visitor-counter-section">
+    <div class="section-container">
+      <div class="counter-box glass-card">
+        <span class="counter-title"><i class="fas fa-eye"></i> Website Traffic Counter</span>
+        <div class="visitor-digits" id="visitor-digits">
+          <!-- Digits injected dynamically by JS -->
+          <span class="digit-card">0</span>
+          <span class="digit-card">1</span>
+          <span class="digit-card">2</span>
+          <span class="digit-card">4</span>
+          <span class="digit-card">5</span>
+          <span class="digit-card">8</span>
         </div>
+        <span class="counter-subtitle">Thank you for visiting the Citation Club!</span>
       </div>
     </div>
   </section>
@@ -612,7 +808,9 @@
           <li><a href="#home"><i class="fas fa-chevron-right"></i> Home</a></li>
           <li><a href="#about"><i class="fas fa-chevron-right"></i> About</a></li>
           <li><a href="#domains"><i class="fas fa-chevron-right"></i> Domains</a></li>
+          <li><a href="#top-cited"><i class="fas fa-chevron-right"></i> Top Cited</a></li>
           <li><a href="#resources"><i class="fas fa-chevron-right"></i> Resources</a></li>
+          <li><a href="#committee"><i class="fas fa-chevron-right"></i> Committee</a></li>
           <li><a href="#contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
         </ul>
       </div>
@@ -644,10 +842,8 @@
       </div>
     </div>
 
-    <div class="footer-bottom">
-      <p>&copy; 2026 Citation Club, JIS College of Engineering. All Rights Reserved.</p>
-      <p class="footer-credits">Designed with <i class="fas fa-heart" style="color:#f6c90e"></i> for Academic Excellence
-      </p>
+    <div class="footer-bottom" style="justify-content: center; text-align: center;">
+      <p>&copy; Developed by Dr. Sayan Chakraborty</p>
     </div>
   </footer>
 

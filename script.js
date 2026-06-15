@@ -73,8 +73,13 @@ function updateCountersData() {
   });
   const totalDomains = uniqueDomains.size;
 
-  // Estimate citations dynamically (e.g. average of 42 citations per paper)
-  const totalCitations = totalPapers * 42;
+  // Sum citations dynamically from the database
+  let totalCitations = 0;
+  PAPERS_DATABASE.forEach(p => {
+    if (p.citations) {
+      totalCitations += p.citations;
+    }
+  });
 
   // Update HTML data-target attributes
   const domCounter = document.getElementById('counter-domains');
@@ -455,21 +460,30 @@ function initDomainTabs() {
       card.className = 'paper-card reveal';
       card.style.animationDelay = `${index * 0.05}s`;
 
-      const doiSection = paper.doi
-        ? `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="paper-doi" aria-label="DOI: ${paper.doiLabel}">
-             <i class="fas fa-external-link-alt"></i> DOI: ${paper.doiLabel}
-           </a>`
-        : `<span class="paper-doi" style="opacity:0.5;cursor:default;"><i class="fas fa-book"></i> No DOI available</span>`;
+       let doiSection = '';
+       if (paper.doi) {
+         if (paper.doi.indexOf('doi.org') !== -1) {
+           doiSection = `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="paper-doi" aria-label="DOI: ${paper.doiLabel}">
+                <i class="fas fa-external-link-alt"></i> DOI: ${paper.doiLabel}
+              </a>`;
+         } else {
+           doiSection = `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="paper-doi" aria-label="Scopus Link">
+                <i class="fas fa-external-link-alt"></i> Scopus Link
+              </a>`;
+         }
+       } else {
+         doiSection = `<span class="paper-doi" style="opacity:0.5;cursor:default;"><i class="fas fa-book"></i> No DOI available</span>`;
+       }
 
-      card.innerHTML = `
-        <div class="paper-number">${index + 1}</div>
-        <div class="paper-citation">
-          <span class="paper-authors">${paper.authors} (${paper.year}). </span>
-          <em class="paper-title">${paper.title}</em>
-          <span class="paper-journal"> ${paper.journal}</span>
-        </div>
-        ${doiSection}
-      `;
+       card.innerHTML = `
+         <div class="paper-number">${index + 1}</div>
+         <div class="paper-citation">
+           <span class="paper-authors">${paper.authors} (${paper.year}). </span>
+           <em class="paper-title">${paper.title}</em>
+           <span class="paper-journal"> ${paper.journal}</span>
+         </div>
+         ${doiSection}
+       `;
 
       papersGrid.appendChild(card);
     });
@@ -714,7 +728,7 @@ function initCarousel() {
 
     const doiBtn = paper.doi
       ? `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="carousel-doi-btn">
-           <i class="fas fa-external-link-alt"></i> View DOI
+           <i class="fas fa-external-link-alt"></i> ${paper.doi.indexOf('doi.org') !== -1 ? 'View DOI' : 'View on Scopus'}
          </a>`
       : `<span class="carousel-doi-btn" style="opacity:0.5;cursor:default;">No DOI</span>`;
 
@@ -1040,7 +1054,7 @@ function initSearch() {
           <span class="search-result-domain">${paper.domain}</span>
           ${paper.doi
             ? `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="search-result-doi">
-                 <i class="fas fa-external-link-alt"></i> ${paper.doiLabel}
+                 <i class="fas fa-external-link-alt"></i> ${paper.doi.indexOf('doi.org') !== -1 ? paper.doiLabel : 'Scopus Link'}
                </a>`
             : '<span class="search-result-doi">No DOI</span>'
           }
@@ -1291,6 +1305,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearch();
   initContactForm();
   initFooterDomainLinks();
+  initTopCitedPapers();
+  initVisitorCounter();
 
   // Charts (lazy, on scroll)
   observeCharts();
@@ -1311,3 +1327,114 @@ window.addEventListener('resize', debounce(() => {
   // Re-check scroll reveal for any newly visible items
   initScrollReveal();
 }, 300));
+
+/* ============================================================
+   TOP CITED PAPERS VIEW
+   ============================================================ */
+function initTopCitedPapers() {
+  const topCitedGrid = document.getElementById('top-cited-grid');
+  const limitSelect = document.getElementById('top-cited-limit-select');
+
+  if (!topCitedGrid || !limitSelect) return;
+
+  // Sort papers by citations descending (clone array to prevent side effects)
+  const sortedPapers = [...PAPERS_DATABASE].sort((a, b) => {
+    const citA = a.citations || 0;
+    const citB = b.citations || 0;
+    return citB - citA;
+  });
+
+  function renderTopCited(limit) {
+    topCitedGrid.innerHTML = '';
+    
+    let count = sortedPapers.length;
+    if (limit !== 'all') {
+      count = Math.min(parseInt(limit, 10), sortedPapers.length);
+    }
+
+    const papersToRender = sortedPapers.slice(0, count);
+
+    papersToRender.forEach((paper, index) => {
+      const card = document.createElement('article');
+      card.className = 'paper-card reveal';
+      card.style.animationDelay = `${(index % 20) * 0.04}s`;
+
+      let doiSection = '';
+      if (paper.doi) {
+        if (paper.doi.indexOf('doi.org') !== -1) {
+          doiSection = `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="paper-doi" aria-label="DOI: ${paper.doiLabel}">
+               <i class="fas fa-external-link-alt"></i> DOI: ${paper.doiLabel}
+             </a>`;
+        } else {
+          doiSection = `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="paper-doi" aria-label="Scopus Link">
+               <i class="fas fa-external-link-alt"></i> Scopus Link
+             </a>`;
+        }
+      } else {
+        doiSection = `<span class="paper-doi" style="opacity:0.5;cursor:default;"><i class="fas fa-book"></i> No DOI available</span>`;
+      }
+
+      card.innerHTML = `
+        <span class="citations-badge"><i class="fas fa-quote-right"></i> ${paper.citations || 0} Citations</span>
+        <div class="paper-citation">
+          <span class="paper-authors">${paper.authors} (${paper.year}). </span>
+          <em class="paper-title">${paper.title}</em>
+          <span class="paper-journal"> ${paper.journal}</span>
+        </div>
+        ${doiSection}
+      `;
+
+      topCitedGrid.appendChild(card);
+    });
+
+    // Re-trigger reveal animations
+    requestAnimationFrame(() => {
+      initScrollReveal();
+      topCitedGrid.querySelectorAll('.reveal').forEach(el => {
+        setTimeout(() => el.classList.add('visible'), 50);
+      });
+    });
+  }
+
+  // Handle dropdown change
+  limitSelect.addEventListener('change', (e) => {
+    renderTopCited(e.target.value);
+  });
+
+  // Initial render
+  renderTopCited(limitSelect.value);
+}
+
+/* ============================================================
+   VISITOR COUNTER LOGIC
+   ============================================================ */
+function initVisitorCounter() {
+  const visitorDigitsContainer = document.getElementById('visitor-digits');
+  if (!visitorDigitsContainer) return;
+
+  const STORAGE_KEY = 'citation_club_visitor_count';
+  const BASE_COUNT = 12458;
+
+  let count = localStorage.getItem(STORAGE_KEY);
+  if (!count) {
+    count = BASE_COUNT;
+  } else {
+    count = parseInt(count, 10);
+  }
+
+  // Increment traffic
+  count++;
+  localStorage.setItem(STORAGE_KEY, count.toString());
+
+  // Format with leading zeros up to 6 digits
+  const digitStr = count.toString().padStart(6, '0');
+  visitorDigitsContainer.innerHTML = '';
+  
+  for (let i = 0; i < digitStr.length; i++) {
+    const span = document.createElement('span');
+    span.className = 'digit-card';
+    span.textContent = digitStr[i];
+    visitorDigitsContainer.appendChild(span);
+  }
+}
+
