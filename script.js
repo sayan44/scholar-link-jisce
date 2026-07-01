@@ -1,5 +1,5 @@
 /**
- * Citation Club – JIS College of Engineering
+ * Scholar Link – JIS College of Engineering
  * script.js – Complete JavaScript Logic
  * Features: Particles, Counters, Domain Tabs, Search, Carousel, Charts, Form
  */
@@ -1573,7 +1573,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
 
   // Log
-  console.log('%c🎓 Citation Club – JIS College of Engineering', 'color:#f6c90e;font-size:14px;font-weight:bold;background:#0a2463;padding:8px 16px;border-radius:4px;');
+  console.log('%c🎓 Scholar Link – JIS College of Engineering', 'color:#f6c90e;font-size:14px;font-weight:bold;background:#0a2463;padding:8px 16px;border-radius:4px;');
   console.log('%c Research • Cite • Impact', 'color:#94a3b8;font-size:12px;');
 });
 
@@ -1696,7 +1696,7 @@ function initVisitorCounter() {
   const visitorDigitsContainer = document.getElementById('visitor-digits');
   if (!visitorDigitsContainer) return;
 
-  const STORAGE_KEY = 'citation_club_visitor_count';
+  const STORAGE_KEY = 'scholar_link_visitor_count';
   const BASE_COUNT = 12458;
 
   let count = localStorage.getItem(STORAGE_KEY);
