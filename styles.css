@@ -2142,6 +2142,32 @@ address {
 }
 
 /* Category-specific styling for pills */
+/* 0. All Categories */
+.domain-pill.cat-all {
+  border-color: rgba(246, 201, 14, 0.2);
+  background: rgba(246, 201, 14, 0.03);
+}
+.domain-pill.cat-all:hover {
+  border-color: var(--accent-dark);
+  background: rgba(246, 201, 14, 0.08);
+}
+.domain-pill.cat-all .pill-icon {
+  color: var(--accent-dark);
+}
+.domain-pill.cat-all.active {
+  background: var(--grad-accent);
+  border-color: var(--accent-dark);
+  color: var(--primary-dark) !important;
+  box-shadow: 0 6px 16px rgba(246, 201, 14, 0.3);
+}
+.domain-pill.cat-all.active .pill-icon {
+  color: var(--primary-dark) !important;
+}
+.domain-pill.cat-all.active .pill-count {
+  background: rgba(10, 36, 99, 0.15);
+  color: var(--primary-dark);
+}
+
 /* 1. Healthcare */
 .domain-pill.cat-healthcare {
   border-color: rgba(239, 68, 68, 0.12);
@@ -2974,6 +3000,132 @@ address {
 .search-flash-highlight {
   animation: searchFlash 2.5s ease-out !important;
   border-color: var(--accent) !important;
+}
+
+/* ---------- RESEARCH ANALYTICS SECTION ---------- */
+.analytics-section {
+  background: var(--grad-section-alt);
+  position: relative;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+@media (max-width: 1024px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analytics-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(10, 36, 99, 0.06);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.analytics-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(246, 201, 14, 0.3);
+}
+
+.chart-header {
+  border-bottom: 1px solid rgba(10, 36, 99, 0.06);
+  padding-bottom: 14px;
+}
+
+.chart-header h3 {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.chart-header h3 i {
+  color: var(--accent-dark);
+}
+
+.chart-meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 350px;
+}
+
+/* ---------- SUBDOMAIN TABS ---------- */
+.subdomain-tabs-wrapper {
+  background: var(--white);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(10, 36, 99, 0.04);
+  margin-top: 24px;
+}
+
+.subdomain-filter-label {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subdomain-filter-label i {
+  color: var(--accent-dark);
+}
+
+.subdomain-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.subdomain-tab {
+  padding: 6px 14px;
+  background: rgba(10, 36, 99, 0.04);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.subdomain-tab:hover {
+  background: rgba(10, 36, 99, 0.08);
+  color: var(--primary);
+}
+
+.subdomain-tab.active {
+  background: var(--primary);
+  color: var(--white);
+  box-shadow: 0 4px 10px rgba(10, 36, 99, 0.2);
 }
 
 

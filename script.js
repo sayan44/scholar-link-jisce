@@ -379,44 +379,143 @@ function highlightActiveNavLink() {
 }
 
 /* ============================================================
+   MAIN DOMAINS DATA STRUCTURE
+   ============================================================ */
+const MAIN_DOMAINS = {
+  "Data Science & Analytics": {
+    icon: "fas fa-robot",
+    category: "ds",
+    description: "Big data analytics, social network structures, and business intelligence models.",
+    subdomains: ["Data Science & Analytics", "Network Science", "Social Network Analysis", "Management & Business Analytics"]
+  },
+  "Healthcare & Biomedical": {
+    icon: "fas fa-heartbeat",
+    category: "healthcare",
+    description: "Applications of artificial intelligence, image processing, and digital tools in health systems.",
+    subdomains: ["Healthcare AI & Digital Health", "Medical Electronics", "Medical Imaging", "Biomedical Engineering", "Healthcare IoT", "Biomedical Security", "Biomedical Signal Processing", "Mental Health AI", "Epidemiological Modeling"]
+  },
+  "Machine Learning & AI": {
+    icon: "fas fa-brain",
+    category: "ml",
+    description: "Deep learning foundations, natural language processing, computer vision, and sentiment analysis.",
+    subdomains: ["Machine & Deep Learning", "Natural Language Processing", "Pattern Recognition", "Sentiment Analysis", "Speech & Audio Processing", "Image Processing & Computer Vision"]
+  },
+  "Computer Science & IT": {
+    icon: "fas fa-laptop-code",
+    category: "ds",
+    description: "Cybersecurity frameworks, blockchain technology, grid infrastructure, cloud systems, and web technologies.",
+    subdomains: ["Cryptography & Cybersecurity", "Cloud & Grid Computing", "Blockchain Technologies", "Database & Big Data Systems", "Web Technology & Analytics", "Educational Technology", "Digital Watermarking", "IoT & Connected Systems", "Internet of Things (IoT)", "Smart Home Automation"]
+  },
+  "Electrical & Electronics": {
+    icon: "fas fa-bolt",
+    category: "iot",
+    description: "Smart grids, high-voltage engineering, VLSI circuits, and embedded automation.",
+    subdomains: ["Power Systems & Smart Grids", "Power Electronics & Converters", "VLSI & Device Technology", "High Voltage Engineering", "Embedded Systems & Robotics"]
+  },
+  "Optics & Communications": {
+    icon: "fas fa-wifi",
+    category: "iot",
+    description: "Photonics research, wireless networking, vehicular systems, and optical communication.",
+    subdomains: ["Optics & Photonics", "Wireless Communication & Networks", "Wireless & Sensor Networks", "Optical Communication & Networks", "Atmospheric Propagation & Rain Attenuation", "VANET & Vehicular Networks"]
+  },
+  "Applied Mathematics": {
+    icon: "fas fa-calculator",
+    category: "remote",
+    description: "Mathematical modeling, soft computing algorithms, and scientific optimization.",
+    subdomains: ["Applied Mathematics & Modeling", "Optimization & Soft Computing"]
+  },
+  "Physics & Quantum Science": {
+    icon: "fas fa-atom",
+    category: "remote",
+    description: "Quantum computing algorithms, physical science forecasting, and thermal systems.",
+    subdomains: ["Quantum Computing & Physics", "Weather & Climate Forecasting", "Nuclear & Thermal Engineering"]
+  },
+  "Chemistry & Materials Science": {
+    icon: "fas fa-vial",
+    category: "remote",
+    description: "Nanomaterials synthesis, polymer engineering, and physical-chemical compound analysis.",
+    subdomains: ["Nanotechnology & Nanomaterials", "Polymer Science & Engineering", "Materials Science & Engineering", "Physical Chemistry"]
+  },
+  "Renewable & Environmental": {
+    icon: "fas fa-seedling",
+    category: "remote",
+    description: "Solar harvesting, wind dynamics, environmental waste management, and smart water resources.",
+    subdomains: ["Renewable & Solar Energy Systems", "Wind Energy & Aerodynamics", "Environmental & Waste Management", "Smart Cities & Infrastructure", "Smart Water Management"]
+  },
+  "Mechanical & Civil Engineering": {
+    icon: "fas fa-cogs",
+    category: "remote",
+    description: "Advanced manufacturing systems, structural engineering, and mechanical processes.",
+    subdomains: ["Structural Engineering & FEA", "Manufacturing & Mechanical Engineering"]
+  },
+  "Agricultural AI & Digital Agriculture": {
+    icon: "fas fa-tractor",
+    category: "remote",
+    description: "Deep learning models and smart agricultural systems for crop yields and land protection.",
+    subdomains: ["Agricultural AI & Digital Agriculture"]
+  }
+};
+
+/* ============================================================
    DOMAIN TABS & PAPER RENDERING
    ============================================================ */
 function initDomainTabs() {
   const pillsGrid = document.getElementById('domain-pills-grid');
   const searchInput = document.getElementById('domain-select-search');
   const papersGrid = document.getElementById('papers-grid');
+  const subdomainTabsWrapper = document.getElementById('subdomain-tabs-wrapper');
+  const subdomainTabsContainer = document.getElementById('subdomain-tabs');
 
   if (!pillsGrid) return;
 
-  // Extract unique domains dynamically and map them to their category
-  const domainsMap = {};
-  const domainCategoryMap = {};
+  // Calculate paper counts per raw subdomain dynamically
+  const rawSubdomainsMap = {};
   PAPERS_DATABASE.forEach(paper => {
     const dom = paper.domain;
     if (dom) {
-      domainsMap[dom] = (domainsMap[dom] || 0) + 1;
-      if (paper.category) {
-        domainCategoryMap[dom] = paper.category;
-      }
+      rawSubdomainsMap[dom] = (rawSubdomainsMap[dom] || 0) + 1;
     }
   });
-  const sortedDomains = Object.keys(domainsMap).sort();
 
-  let activeDomain = sortedDomains[0] || '';
+  // Calculate paper counts per main domain
+  const mainDomainsList = ["All Categories", ...Object.keys(MAIN_DOMAINS)];
+  const mainDomainsMap = { "All Categories": PAPERS_DATABASE.length };
+  
+  Object.keys(MAIN_DOMAINS).forEach(mDom => {
+    let count = 0;
+    MAIN_DOMAINS[mDom].subdomains.forEach(sub => {
+      count += (rawSubdomainsMap[sub] || 0);
+    });
+    mainDomainsMap[mDom] = count;
+  });
+
+  let activeMainDomain = '';
+  let activeSubDomain = 'All';
   let activeYear = 'All';
 
-  // Render papers for selected domain and year
-  function renderPapers(domainName, yearFilter = 'All') {
+  // Render papers for selected main domain or subdomain, and year
+  function renderPapers(mainDomName, subDomName = 'All', yearFilter = 'All') {
     if (!papersGrid) return;
 
-    const domainPapers = PAPERS_DATABASE.filter(p => p.domain === domainName);
-    const samplePaper = domainPapers[0];
-    const categoryKey = samplePaper ? samplePaper.category : 'ds';
-    const categoryInfo = RESEARCH_DATA[categoryKey] || { icon: 'fas fa-book', description: 'Curated research publications.' };
+    let targetPapers = [];
+    if (mainDomName === "All Categories") {
+      if (subDomName === 'All') {
+        targetPapers = PAPERS_DATABASE;
+      } else {
+        targetPapers = PAPERS_DATABASE.filter(p => p.domain === subDomName);
+      }
+    } else {
+      const subdomainsList = MAIN_DOMAINS[mainDomName].subdomains;
+      if (subDomName === 'All') {
+        targetPapers = PAPERS_DATABASE.filter(p => subdomainsList.includes(p.domain));
+      } else {
+        targetPapers = PAPERS_DATABASE.filter(p => p.domain === subDomName);
+      }
+    }
 
     const filteredPapers = yearFilter === 'All'
-      ? domainPapers
-      : domainPapers.filter(p => p.year === yearFilter);
+      ? targetPapers
+      : targetPapers.filter(p => p.year === yearFilter);
 
     // Sort: latest year first, then title
     filteredPapers.sort((a, b) => {
@@ -431,15 +530,47 @@ function initDomainTabs() {
     const bannerDesc = document.getElementById('domain-banner-desc');
     const bannerPaperCount = document.getElementById('domain-paper-count');
 
-    if (bannerIcon) bannerIcon.innerHTML = `<i class="${categoryInfo.icon}"></i>`;
-    if (bannerName) bannerName.textContent = domainName;
-    if (bannerDesc) bannerDesc.textContent = `Explore research achievements, academic publications, and citation profiles in the field of ${domainName}.`;
-    if (bannerPaperCount) bannerPaperCount.textContent = domainPapers.length;
+    if (mainDomName === "All Categories") {
+      if (bannerIcon) bannerIcon.innerHTML = `<i class="fas fa-th"></i>`;
+      if (bannerName) {
+        if (subDomName === 'All') {
+          bannerName.textContent = "All Categories";
+        } else {
+          bannerName.textContent = `All Categories ➔ ${subDomName}`;
+        }
+      }
+      if (bannerDesc) {
+        if (subDomName === 'All') {
+          bannerDesc.textContent = "Explore all research publications and academic achievements across all domains.";
+        } else {
+          bannerDesc.textContent = `Explore research achievements, academic publications, and citation profiles in the field of ${subDomName}.`;
+        }
+      }
+    } else {
+      const mInfo = MAIN_DOMAINS[mainDomName];
+      if (bannerIcon) bannerIcon.innerHTML = `<i class="${mInfo.icon}"></i>`;
+      if (bannerName) {
+        if (subDomName === 'All') {
+          bannerName.textContent = mainDomName;
+        } else {
+          bannerName.textContent = `${mainDomName} ➔ ${subDomName}`;
+        }
+      }
+      if (bannerDesc) {
+        if (subDomName === 'All') {
+          bannerDesc.textContent = mInfo.description;
+        } else {
+          bannerDesc.textContent = `Explore research achievements, academic publications, and citation profiles in the field of ${subDomName}.`;
+        }
+      }
+    }
+    
+    if (bannerPaperCount) bannerPaperCount.textContent = targetPapers.length;
 
     // Render cards
     papersGrid.innerHTML = '';
     if (filteredPapers.length === 0) {
-      papersGrid.innerHTML = '<div class="no-papers"><p><i class="fas fa-info-circle"></i> No papers found for this year.</p></div>';
+      papersGrid.innerHTML = '<div class="no-papers"><p><i class="fas fa-info-circle"></i> No papers found for this selection.</p></div>';
       return;
     }
 
@@ -448,49 +579,50 @@ function initDomainTabs() {
       card.className = 'paper-card reveal';
       card.style.animationDelay = `${index * 0.05}s`;
 
-       let doiSection = '';
-       if (paper.doi) {
-         if (paper.doi.indexOf('doi.org') !== -1) {
-           doiSection = `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="paper-doi" aria-label="DOI: ${paper.doiLabel}">
-                <i class="fas fa-external-link-alt"></i> DOI: ${paper.doiLabel}
-              </a>`;
-         } else {
-           doiSection = `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="paper-doi" aria-label="Scopus Link">
-                <i class="fas fa-external-link-alt"></i> Scopus Link
-              </a>`;
-         }
-       } else {
-         doiSection = `<span class="paper-doi" style="opacity:0.5;cursor:default;"><i class="fas fa-book"></i> No DOI available</span>`;
-       }
+      let doiSection = '';
+      if (paper.doi) {
+        if (paper.doi.indexOf('doi.org') !== -1) {
+          doiSection = `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="paper-doi" aria-label="DOI: ${paper.doiLabel}">
+               <i class="fas fa-external-link-alt"></i> DOI: ${paper.doiLabel}
+             </a>`;
+        } else {
+          doiSection = `<a href="${paper.doi}" target="_blank" rel="noopener noreferrer" class="paper-doi" aria-label="Scopus Link">
+               <i class="fas fa-external-link-alt"></i> Scopus Link
+             </a>`;
+        }
+      } else {
+        doiSection = `<span class="paper-doi" style="opacity:0.5;cursor:default;"><i class="fas fa-book"></i> No DOI available</span>`;
+      }
 
-       card.innerHTML = `
-         <div class="paper-number">${index + 1}</div>
-         <div class="paper-citation">
-           <span class="paper-authors">${paper.authors} (${paper.year}). </span>
-           <em class="paper-title">${paper.title}</em>
-           <span class="paper-journal"> ${paper.journal}</span>
-         </div>
-         <div class="card-actions">
-           ${doiSection}
-           <button class="citation-btn dom-citation-btn" aria-label="Cite this paper">
-             <i class="fas fa-quote-left"></i> Cite
-           </button>
-         </div>
-         <div class="citation-drawer" id="dom-citation-drawer-${index}">
-           <div class="citation-tabs">
-             <button class="citation-tab-btn dom-citation-tab-btn active" data-style="apa" data-index="${index}">APA</button>
-             <button class="citation-tab-btn dom-citation-tab-btn" data-style="mla" data-index="${index}">MLA</button>
-             <button class="citation-tab-btn dom-citation-tab-btn" data-style="chicago" data-index="${index}">Chicago</button>
-             <button class="citation-tab-btn dom-citation-tab-btn" data-style="ieee" data-index="${index}">IEEE</button>
-           </div>
-           <div class="citation-content-area">
-             <div class="citation-text-box" id="dom-citation-text-${index}">Loading...</div>
-             <button class="btn-copy-citation" id="dom-copy-btn-${index}" data-index="${index}" title="Copy to clipboard">
-               <i class="far fa-copy"></i>
-             </button>
-           </div>
-         </div>
-       `;
+      card.innerHTML = `
+        <div class="paper-number">${index + 1}</div>
+        <div class="paper-citation">
+          <span class="paper-authors">${paper.authors} (${paper.year}). </span>
+          <em class="paper-title">${paper.title}</em>
+          <span class="paper-journal"> ${paper.journal}</span>
+        </div>
+        <div class="card-actions">
+          ${doiSection}
+          <button class="citation-btn dom-citation-btn" aria-label="Cite this paper">
+            <i class="fas fa-quote-left"></i> Cite
+          </button>
+        </div>
+        <div class="citation-drawer" id="dom-citation-drawer-${index}">
+          <div class="citation-tabs">
+            <button class="citation-tab-btn dom-citation-tab-btn active" data-style="apa" data-index="${index}">APA</button>
+            <button class="citation-tab-btn dom-citation-tab-btn" data-style="mla" data-index="${index}">MLA</button>
+            <button class="citation-tab-btn dom-citation-tab-btn" data-style="chicago" data-index="${index}">Chicago</button>
+            <button class="citation-tab-btn dom-citation-tab-btn" data-style="ieee" data-index="${index}">IEEE</button>
+            <button class="citation-tab-btn dom-citation-tab-btn" data-style="vancouver" data-index="${index}">Vancouver</button>
+          </div>
+          <div class="citation-content-area">
+            <div class="citation-text-box" id="dom-citation-text-${index}">Loading...</div>
+            <button class="btn-copy-citation" id="dom-copy-btn-${index}" data-index="${index}" title="Copy to clipboard">
+              <i class="far fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      `;
 
       papersGrid.appendChild(card);
       attachCitationEvents(card, paper, 'dom', index);
@@ -505,19 +637,33 @@ function initDomainTabs() {
     });
   }
 
-  // Generate Year filter tabs dynamically
-  function renderYearTabs(domainName) {
+  // Generate Year filter tabs dynamically based on selection
+  function renderYearTabs(mainDomName, subDomName = 'All') {
     const yearTabsContainer = document.getElementById('year-tabs');
     if (!yearTabsContainer) return;
 
-    const domainPapers = PAPERS_DATABASE.filter(p => p.domain === domainName);
+    let targetPapers = [];
+    if (mainDomName === "All Categories") {
+      if (subDomName === 'All') {
+        targetPapers = PAPERS_DATABASE;
+      } else {
+        targetPapers = PAPERS_DATABASE.filter(p => p.domain === subDomName);
+      }
+    } else {
+      const subdomainsList = MAIN_DOMAINS[mainDomName].subdomains;
+      if (subDomName === 'All') {
+        targetPapers = PAPERS_DATABASE.filter(p => subdomainsList.includes(p.domain));
+      } else {
+        targetPapers = PAPERS_DATABASE.filter(p => p.domain === subDomName);
+      }
+    }
+
     const years = new Set();
-    domainPapers.forEach(p => {
+    targetPapers.forEach(p => {
       if (p.year) years.add(p.year);
     });
 
     const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
-
     yearTabsContainer.innerHTML = '';
 
     // "All" tab
@@ -529,7 +675,7 @@ function initDomainTabs() {
       yearTabsContainer.querySelectorAll('.year-tab').forEach(t => t.classList.remove('active'));
       allTab.classList.add('active');
       activeYear = 'All';
-      renderPapers(domainName, 'All');
+      renderPapers(mainDomName, subDomName, 'All');
     });
     yearTabsContainer.appendChild(allTab);
 
@@ -543,49 +689,161 @@ function initDomainTabs() {
         yearTabsContainer.querySelectorAll('.year-tab').forEach(t => t.classList.remove('active'));
         yrTab.classList.add('active');
         activeYear = yr;
-        renderPapers(domainName, yr);
+        renderPapers(mainDomName, subDomName, yr);
       });
       yearTabsContainer.appendChild(yrTab);
     });
   }
 
-  // Select a domain
-  function selectDomain(domainName) {
-    activeDomain = domainName;
+  // Generate Subdomain filter tabs dynamically
+  function renderSubdomainTabs(mainDomName) {
+    if (!subdomainTabsContainer || !subdomainTabsWrapper) return;
+
+    let subList = [];
+    if (mainDomName === "All Categories") {
+      const allSubdomains = [];
+      Object.keys(MAIN_DOMAINS).forEach(mDom => {
+        MAIN_DOMAINS[mDom].subdomains.forEach(sub => {
+          if (!allSubdomains.includes(sub)) {
+            allSubdomains.push(sub);
+          }
+        });
+      });
+      subList = allSubdomains.filter(sub => rawSubdomainsMap[sub] > 0);
+    } else {
+      const info = MAIN_DOMAINS[mainDomName];
+      subList = info.subdomains.filter(sub => rawSubdomainsMap[sub] > 0);
+    }
+
+    if (subList.length === 0) {
+      subdomainTabsWrapper.style.display = 'none';
+      return;
+    }
+
+    subdomainTabsWrapper.style.display = 'block';
+    subdomainTabsContainer.innerHTML = '';
+
+    // Specific Subdomain tabs
+    subList.forEach(sub => {
+      const subTab = document.createElement('button');
+      subTab.className = 'subdomain-tab' + (activeSubDomain === sub ? ' active' : '');
+      subTab.innerHTML = `${sub} <span class="pill-count" style="margin-left: 6px; padding: 2px 6px; border-radius: var(--radius-full); background: rgba(10,36,99,0.06); font-size: 0.7rem;">${rawSubdomainsMap[sub]}</span>`;
+      subTab.setAttribute('role', 'tab');
+      subTab.addEventListener('click', () => {
+        subdomainTabsContainer.querySelectorAll('.subdomain-tab').forEach(t => t.classList.remove('active'));
+        subTab.classList.add('active');
+        activeSubDomain = sub;
+        activeYear = 'All';
+        renderYearTabs(mainDomName, sub);
+        renderPapers(mainDomName, sub, 'All');
+      });
+      subdomainTabsContainer.appendChild(subTab);
+    });
+  }
+
+  // Select a main domain
+  function selectMainDomain(mainDomName) {
+    activeMainDomain = mainDomName;
     activeYear = 'All';
 
-    // Update pills status
+    // Find the first subdomain to select by default
+    let subList = [];
+    if (mainDomName === "All Categories") {
+      const allSubdomains = [];
+      Object.keys(MAIN_DOMAINS).forEach(mDom => {
+        MAIN_DOMAINS[mDom].subdomains.forEach(sub => {
+          if (!allSubdomains.includes(sub)) {
+            allSubdomains.push(sub);
+          }
+        });
+      });
+      subList = allSubdomains.filter(sub => rawSubdomainsMap[sub] > 0);
+    } else {
+      const info = MAIN_DOMAINS[mainDomName];
+      subList = info.subdomains.filter(sub => rawSubdomainsMap[sub] > 0);
+    }
+
+    if (subList.length > 0) {
+      activeSubDomain = subList[0];
+    } else {
+      activeSubDomain = 'All';
+    }
+
+    // Update main pills grid status
     pillsGrid.querySelectorAll('.domain-pill').forEach(pill => {
-      const isCurrent = pill.dataset.domain === domainName;
+      const isCurrent = pill.dataset.domain === mainDomName;
       pill.classList.toggle('active', isCurrent);
       pill.setAttribute('aria-selected', isCurrent.toString());
     });
 
-    renderYearTabs(domainName);
-    renderPapers(domainName, 'All');
+    renderSubdomainTabs(mainDomName);
+    renderYearTabs(mainDomName, activeSubDomain);
+    renderPapers(mainDomName, activeSubDomain, 'All');
+
+    // Show dynamic panels
+    const banner = document.getElementById('domain-info-banner');
+    if (banner) banner.style.display = 'flex';
+    
+    const yearWrapper = document.querySelector('.year-tabs-wrapper');
+    if (yearWrapper) yearWrapper.style.display = 'block';
+    
+    const panel = document.getElementById('papers-panel');
+    if (panel) panel.style.display = 'block';
   }
 
-  // Render all domain pills initially
+  // Collapsing Papers List
+  function hidePapersSection() {
+    const banner = document.getElementById('domain-info-banner');
+    if (banner) banner.style.display = 'none';
+    
+    if (subdomainTabsWrapper) subdomainTabsWrapper.style.display = 'none';
+    
+    const yearWrapper = document.querySelector('.year-tabs-wrapper');
+    if (yearWrapper) yearWrapper.style.display = 'none';
+    
+    const panel = document.getElementById('papers-panel');
+    if (panel) panel.style.display = 'none';
+    
+    pillsGrid.querySelectorAll('.domain-pill').forEach(pill => {
+      pill.classList.remove('active');
+      pill.setAttribute('aria-selected', 'false');
+    });
+    
+    activeMainDomain = '';
+    scrollToDomains();
+  }
+
+  const hideBtn = document.getElementById('hide-papers-btn');
+  if (hideBtn) hideBtn.addEventListener('click', hidePapersSection);
+
+  const hideBottomBtn = document.getElementById('hide-papers-bottom-btn');
+  if (hideBottomBtn) hideBottomBtn.addEventListener('click', hidePapersSection);
+
+  // Render all main domain pills
   pillsGrid.innerHTML = '';
-  sortedDomains.forEach((dom, index) => {
-    const categoryKey = domainCategoryMap[dom] || 'ds';
-    const categoryInfo = RESEARCH_DATA[categoryKey] || { icon: 'fas fa-book' };
+  mainDomainsList.forEach((mDom) => {
+    let icon = "fas fa-th";
+    let category = "all";
+    if (mDom !== "All Categories") {
+      icon = MAIN_DOMAINS[mDom].icon;
+      category = MAIN_DOMAINS[mDom].category;
+    }
 
     const pill = document.createElement('button');
-    pill.className = `domain-pill cat-${categoryKey}` + (index === 0 ? ' active' : '');
-    pill.dataset.domain = dom;
-    pill.dataset.category = categoryKey;
+    pill.className = `domain-pill cat-${category}`;
+    pill.dataset.domain = mDom;
+    pill.dataset.category = category;
     pill.setAttribute('role', 'tab');
-    pill.setAttribute('aria-selected', (index === 0).toString());
+    pill.setAttribute('aria-selected', 'false');
     pill.innerHTML = `
-      <i class="${categoryInfo.icon} pill-icon"></i>
-      <span class="pill-name">${dom}</span>
-      <span class="pill-count">${domainsMap[dom]}</span>
+      <i class="${icon} pill-icon"></i>
+      <span class="pill-name">${mDom}</span>
+      <span class="pill-count">${mainDomainsMap[mDom]}</span>
     `;
 
     pill.addEventListener('click', () => {
-      selectDomain(dom);
-      // Scroll to papers banner with offset to clear sticky header
+      selectMainDomain(mDom);
+      // Scroll to papers banner
       const banner = document.getElementById('domain-info-banner');
       if (banner) {
         const offset = 80;
@@ -597,76 +855,29 @@ function initDomainTabs() {
     pillsGrid.appendChild(pill);
   });
 
-  // Category Filter bar click logic
-  const catFilterBar = document.getElementById('category-filter-bar');
-  if (catFilterBar) {
-    catFilterBar.querySelectorAll('.category-filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        catFilterBar.querySelectorAll('.category-filter-btn').forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-selected', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-
-        const selectedCat = btn.dataset.category;
-        const pills = pillsGrid.querySelectorAll('.domain-pill');
-        let firstVisiblePill = null;
-        let activePillStillVisible = false;
-
-        pills.forEach(pill => {
-          const pillCat = pill.dataset.category;
-          const matches = (selectedCat === 'all' || pillCat === selectedCat);
-          if (matches) {
-            pill.style.display = 'flex';
-            if (!firstVisiblePill) firstVisiblePill = pill;
-            if (pill.dataset.domain === activeDomain) activePillStillVisible = true;
-          } else {
-            pill.style.display = 'none';
-          }
-        });
-
-        // If the active domain is hidden, auto-select the first visible one in this category
-        if (!activePillStillVisible && firstVisiblePill) {
-          selectDomain(firstVisiblePill.dataset.domain);
-        }
-      });
-    });
-  }
-
   // Domain search filter
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       const query = e.target.value.toLowerCase().trim();
 
-      // Reset category filter to 'all' if user starts typing
-      if (query !== '' && catFilterBar) {
-        const allBtn = catFilterBar.querySelector('.category-filter-btn[data-category="all"]');
-        if (allBtn && !allBtn.classList.contains('active')) {
-          catFilterBar.querySelectorAll('.category-filter-btn').forEach(b => {
-            b.classList.remove('active');
-            b.setAttribute('aria-selected', 'false');
-          });
-          allBtn.classList.add('active');
-          allBtn.setAttribute('aria-selected', 'true');
-        }
-      }
-
       const pills = pillsGrid.querySelectorAll('.domain-pill');
       pills.forEach(pill => {
         const name = pill.querySelector('.pill-name').textContent.toLowerCase();
-        if (name.includes(query)) {
+        const mDomName = pill.dataset.domain;
+        
+        let matches = name.includes(query);
+        if (mDomName !== "All Categories" && MAIN_DOMAINS[mDomName]) {
+          const subdomainsStr = MAIN_DOMAINS[mDomName].subdomains.join(' ').toLowerCase();
+          matches = matches || subdomainsStr.includes(query);
+        }
+        
+        if (matches) {
           pill.style.display = 'flex';
         } else {
           pill.style.display = 'none';
         }
       });
     });
-  }
-
-  // Initialize first domain
-  if (sortedDomains.length > 0) {
-    selectDomain(sortedDomains[0]);
   }
 
   // Back to Domains buttons logic
@@ -798,6 +1009,23 @@ function getIEEE(paper, parsedAuthors) {
   return citation;
 }
 
+function getVancouver(paper, parsedAuthors) {
+  let authorPart = '';
+  if (parsedAuthors.length > 0) {
+    authorPart = parsedAuthors.map(auth => {
+      const cleanInitials = auth.initials.replace(/\./g, '').replace(/\s/g, '');
+      return `${auth.surname} ${cleanInitials}`;
+    }).join(', ');
+  }
+  if (authorPart && !authorPart.endsWith('.')) authorPart += '.';
+  
+  let citation = `${authorPart} ${paper.title}. ${paper.journal}; ${paper.year}.`;
+  if (paper.doi) {
+    citation += ` ${paper.doi}`;
+  }
+  return citation;
+}
+
 function generateCitationText(paper, style) {
   const parsed = parseAuthors(paper.authors);
   switch (style.toLowerCase()) {
@@ -805,6 +1033,7 @@ function generateCitationText(paper, style) {
     case 'mla': return getMLA(paper, parsed);
     case 'chicago': return getChicago(paper, parsed);
     case 'ieee': return getIEEE(paper, parsed);
+    case 'vancouver': return getVancouver(paper, parsed);
     default: return getAPA(paper, parsed);
   }
 }
@@ -1505,13 +1734,13 @@ function initFooterDomainLinks() {
     link.addEventListener('click', (e) => {
       const domainKeys = ['healthcare', 'ml', 'image', 'remote', 'iot', 'ds'];
       const key = domainKeys[i];
-      if (key && typeof PAPERS_DATABASE !== 'undefined') {
-        // Find the first domain in database belonging to this category
-        const matchPaper = PAPERS_DATABASE.find(p => p.category === key);
-        if (matchPaper) {
-          const domName = matchPaper.domain;
+      if (key && typeof MAIN_DOMAINS !== 'undefined') {
+        // Find the first main domain belonging to this category key
+        const mDomEntry = Object.entries(MAIN_DOMAINS).find(([name, info]) => info.category === key);
+        if (mDomEntry) {
+          const mDomName = mDomEntry[0];
           setTimeout(() => {
-            const pill = document.querySelector(`.domain-pill[data-domain="${domName}"]`);
+            const pill = document.querySelector(`.domain-pill[data-domain="${mDomName}"]`);
             if (pill) {
               pill.click();
               pill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1524,10 +1753,445 @@ function initFooterDomainLinks() {
 }
 
 /* ============================================================
+   DOMAINS CLASSIFICATION MAP (Summarized to exactly 10)
+   ============================================================ */
+const DOMAIN_MAP = {
+  // Machine Learning & AI
+  "Machine & Deep Learning": "Machine Learning & AI",
+  "Natural Language Processing": "Machine Learning & AI",
+  "Pattern Recognition": "Machine Learning & AI",
+  "Sentiment Analysis": "Machine Learning & AI",
+  "Speech & Audio Processing": "Machine Learning & AI",
+  "Image Processing & Computer Vision": "Machine Learning & AI",
+
+  // Healthcare & Biomedical
+  "Healthcare AI & Digital Health": "Healthcare & Biomedical",
+  "Medical Electronics": "Healthcare & Biomedical",
+  "Medical Imaging": "Healthcare & Biomedical",
+  "Biomedical Engineering": "Healthcare & Biomedical",
+  "Healthcare IoT": "Healthcare & Biomedical",
+  "Biomedical Security": "Healthcare & Biomedical",
+  "Biomedical Signal Processing": "Healthcare & Biomedical",
+  "Mental Health AI": "Healthcare & Biomedical",
+  "Epidemiological Modeling": "Healthcare & Biomedical",
+
+  // Data Science & Analytics
+  "Data Science & Analytics": "Data Science & Analytics",
+  "Network Science": "Data Science & Analytics",
+  "Social Network Analysis": "Data Science & Analytics",
+  "Management & Business Analytics": "Data Science & Analytics",
+
+  // Computer Science & IT
+  "Cryptography & Cybersecurity": "Computer Science & IT",
+  "Cloud & Grid Computing": "Computer Science & IT",
+  "Blockchain Technologies": "Computer Science & IT",
+  "Database & Big Data Systems": "Computer Science & IT",
+  "Web Technology & Analytics": "Computer Science & IT",
+  "Educational Technology": "Computer Science & IT",
+  "Digital Watermarking": "Computer Science & IT",
+  "IoT & Connected Systems": "Computer Science & IT",
+  "Internet of Things (IoT)": "Computer Science & IT",
+  "Smart Home Automation": "Computer Science & IT",
+
+  // Electrical & Electronics
+  "Power Systems & Smart Grids": "Electrical & Electronics",
+  "Power Electronics & Converters": "Electrical & Electronics",
+  "VLSI & Device Technology": "Electrical & Electronics",
+  "High Voltage Engineering": "Electrical & Electronics",
+  "Embedded Systems & Robotics": "Electrical & Electronics",
+
+  // Optics & Communications
+  "Optics & Photonics": "Optics & Communications",
+  "Wireless Communication & Networks": "Optics & Communications",
+  "Wireless & Sensor Networks": "Optics & Communications",
+  "Optical Communication & Networks": "Optics & Communications",
+  "Atmospheric Propagation & Rain Attenuation": "Optics & Communications",
+  "VANET & Vehicular Networks": "Optics & Communications",
+
+  // Applied Mathematics
+  "Applied Mathematics & Modeling": "Applied Mathematics",
+  "Optimization & Soft Computing": "Applied Mathematics",
+
+  // Physics & Quantum Science
+  "Quantum Computing & Physics": "Physics & Quantum Science",
+  "Weather & Climate Forecasting": "Physics & Quantum Science",
+  "Nuclear & Thermal Engineering": "Physics & Quantum Science",
+
+  // Chemistry & Materials Science
+  "Nanotechnology & Nanomaterials": "Chemistry & Materials Science",
+  "Polymer Science & Engineering": "Chemistry & Materials Science",
+  "Materials Science & Engineering": "Chemistry & Materials Science",
+  "Physical Chemistry": "Chemistry & Materials Science",
+
+  // Renewable & Civil Engineering
+  "Renewable & Solar Energy Systems": "Renewable & Civil Engineering",
+  "Wind Energy & Aerodynamics": "Renewable & Civil Engineering",
+  "Environmental & Waste Management": "Renewable & Civil Engineering",
+  "Smart Cities & Infrastructure": "Renewable & Civil Engineering",
+  "Smart Water Management": "Renewable & Civil Engineering",
+  "Structural Engineering & FEA": "Renewable & Civil Engineering",
+  "Manufacturing & Mechanical Engineering": "Renewable & Civil Engineering",
+  "Agricultural AI & Digital Agriculture": "Renewable & Civil Engineering"
+};
+
+function getDomainCategory(domainName) {
+  if (!domainName) return "Computer Science & IT";
+  const trimmed = domainName.trim();
+  if (DOMAIN_MAP[trimmed]) return DOMAIN_MAP[trimmed];
+  
+  // Dynamic fallback based on keywords
+  const lower = trimmed.toLowerCase();
+  if (lower.includes("health") || lower.includes("medical") || lower.includes("biomedical") || lower.includes("epidemi")) {
+    return "Healthcare & Biomedical";
+  }
+  if (lower.includes("deep learning") || lower.includes("machine learning") || lower.includes("natural language") || lower.includes("nlp") || lower.includes("neural") || lower.includes("pattern") || lower.includes("computer vision")) {
+    return "Machine Learning & AI";
+  }
+  if (lower.includes("data science") || lower.includes("analytics") || lower.includes("big data")) {
+    return "Data Science & Analytics";
+  }
+  if (lower.includes("power") || lower.includes("grid") || lower.includes("vlsi") || lower.includes("electrical") || lower.includes("electronics")) {
+    return "Electrical & Electronics";
+  }
+  if (lower.includes("math") || lower.includes("optimiz") || lower.includes("model")) {
+    return "Applied Mathematics";
+  }
+  if (lower.includes("physics") || lower.includes("quantum") || lower.includes("optics") || lower.includes("photon")) {
+    return "Physics & Quantum Science";
+  }
+  if (lower.includes("chemistry") || lower.includes("material") || lower.includes("polymer") || lower.includes("nano")) {
+    return "Chemistry & Materials Science";
+  }
+  if (lower.includes("renewable") || lower.includes("solar") || lower.includes("wind") || lower.includes("civil") || lower.includes("environment") || lower.includes("agricultural") || lower.includes("smart cities")) {
+    return "Renewable & Civil Engineering";
+  }
+  if (lower.includes("crypt") || lower.includes("cyber") || lower.includes("cloud") || lower.includes("web") || lower.includes("network") || lower.includes("iot") || lower.includes("internet of things")) {
+    return "Computer Science & IT";
+  }
+  return "Computer Science & IT";
+}
+
+/* ============================================================
+   INITIALIZE DYNAMIC CHART.JS INSTANCES
+   ============================================================ */
+function initCharts() {
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js is not loaded');
+    return;
+  }
+
+  // Set global defaults for premium look
+  Chart.defaults.font.family = "'Poppins', sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = '#475569'; // Slate 600
+
+  // ------------------ FIGURE 1: Publications by Year ------------------
+  const canvasYear = document.getElementById('chart-year');
+  if (canvasYear) {
+    const ctxYear = canvasYear.getContext('2d');
+    const gradientYear = ctxYear.createLinearGradient(0, 0, 0, 300);
+    gradientYear.addColorStop(0, 'rgba(10, 36, 99, 0.35)');
+    gradientYear.addColorStop(1, 'rgba(10, 36, 99, 0.0)');
+
+    new Chart(ctxYear, {
+      type: 'line',
+      data: {
+        labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026 (Till June)'],
+        datasets: [{
+          label: 'Number of Publications',
+          data: [45, 48, 86, 124, 149, 129, 136, 229, 117],
+          borderColor: '#0a2463',
+          borderWidth: 3,
+          backgroundColor: gradientYear,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#f6c90e',
+          pointBorderColor: '#0a2463',
+          pointBorderWidth: 2,
+          pointRadius: 6,
+          pointHoverRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: '#0a2463',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#f6c90e',
+            borderWidth: 1,
+            padding: 12,
+            boxPadding: 6,
+            cornerRadius: 8
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(10, 36, 99, 0.05)'
+            },
+            ticks: {
+              font: {
+                weight: '600'
+              }
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              font: {
+                weight: '600'
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ------------------ FIGURE 2: Publication Types ------------------
+  const canvasCategory = document.getElementById('chart-category');
+  if (canvasCategory) {
+    const ctxCategory = canvasCategory.getContext('2d');
+    const gradientCategory = ctxCategory.createLinearGradient(0, 0, 400, 0);
+    gradientCategory.addColorStop(0, '#0a2463');
+    gradientCategory.addColorStop(1, '#3b82f6');
+
+    new Chart(ctxCategory, {
+      type: 'bar',
+      data: {
+        labels: ['Conference paper', 'Article', 'Book chapter', 'Review', 'Erratum', 'Editorial', 'Book', 'Note', 'Letter'],
+        datasets: [{
+          label: 'Publications',
+          data: [581, 543, 165, 40, 8, 6, 4, 2, 1],
+          backgroundColor: gradientCategory,
+          borderRadius: 6,
+          borderSkipped: false,
+          barThickness: 20
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: '#0a2463',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#f6c90e',
+            borderWidth: 1,
+            padding: 12
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(10, 36, 99, 0.05)'
+            },
+            ticks: {
+              font: {
+                weight: '600'
+              }
+            }
+          },
+          y: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              font: {
+                weight: '600'
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ------------------ FIGURE 3: Domain Distribution (Pie) ------------------
+  const canvasDomain = document.getElementById('chart-domain');
+  if (canvasDomain) {
+    const ctxDomain = canvasDomain.getContext('2d');
+
+    // Aggregate category counts dynamically from PAPERS_DATABASE
+    const counts = {};
+    const CATEGORIES = [
+      'Data Science & Analytics',
+      'Healthcare & Biomedical',
+      'Applied Mathematics',
+      'Renewable & Civil Engineering',
+      'Computer Science & IT',
+      'Optics & Communications',
+      'Electrical & Electronics',
+      'Machine Learning & AI',
+      'Chemistry & Materials Science',
+      'Physics & Quantum Science'
+    ];
+    CATEGORIES.forEach(cat => { counts[cat] = 0; });
+
+    if (typeof PAPERS_DATABASE !== 'undefined') {
+      PAPERS_DATABASE.forEach(paper => {
+        const cat = getDomainCategory(paper.domain);
+        counts[cat] = (counts[cat] || 0) + 1;
+      });
+    }
+
+    const sortedDomains = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1]);
+    const domainLabels = sortedDomains.map(item => item[0]);
+    const domainData = sortedDomains.map(item => item[1]);
+
+    const palette = [
+      '#0a2463', // Deep Navy
+      '#1e3a8a', // Royal Blue
+      '#3b82f6', // Light Blue
+      '#0d9488', // Teal
+      '#10b981', // Emerald
+      '#f6c90e', // Gold
+      '#f97316', // Orange
+      '#ef4444', // Red
+      '#8b5cf6', // Violet
+      '#64748b'  // Slate
+    ];
+
+    new Chart(ctxDomain, {
+      type: 'pie',
+      data: {
+        labels: domainLabels,
+        datasets: [{
+          data: domainData,
+          backgroundColor: palette,
+          borderWidth: 2,
+          borderColor: '#fff',
+          hoverOffset: 12
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              boxWidth: 15,
+              padding: 14,
+              font: {
+                weight: '600'
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: '#0a2463',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#f6c90e',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return ` ${label}: ${value} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ------------------ FIGURE 4: Top Faculty Contributors ------------------
+  const canvasFaculty = document.getElementById('chart-faculty');
+  if (canvasFaculty) {
+    const ctxFaculty = canvasFaculty.getContext('2d');
+    const gradientFaculty = ctxFaculty.createLinearGradient(0, 0, 400, 0);
+    gradientFaculty.addColorStop(0, '#f6c90e');
+    gradientFaculty.addColorStop(1, '#f97316');
+
+    new Chart(ctxFaculty, {
+      type: 'bar',
+      data: {
+        labels: [
+          'Dr. Shyam Sundar Santra', 'Dr. Tanmoy Dutta', 'Dr. Suparna DasGupta',
+          'Dr. Soumyabrata Saha', 'Dr. Sayan Chakraborty', 'Dr. Trina Dutta',
+          'Dr. Ira Nath', 'Dr. Anal Ranjan Sengupta', 'Dr. Sumit Das',
+          'Dr. Moumita Pal', 'Dr. Subhamoy Singha Roy'
+        ],
+        datasets: [{
+          label: 'Publications',
+          data: [121, 49, 43, 42, 29, 28, 27, 26, 26, 26, 25],
+          backgroundColor: gradientFaculty,
+          borderRadius: 6,
+          borderSkipped: false,
+          barThickness: 15
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: '#0a2463',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#f6c90e',
+            borderWidth: 1,
+            padding: 12
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(10, 36, 99, 0.05)'
+            },
+            ticks: {
+              font: {
+                weight: '600'
+              }
+            }
+          },
+          y: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              font: {
+                weight: '600'
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+}
+
+/* ============================================================
    INTERSECTION OBSERVER – ANIMATE CHARTS WHEN VISIBLE
    ============================================================ */
 function observeCharts() {
-  const statsSection = document.getElementById('stats');
+  const statsSection = document.getElementById('analytics');
   if (!statsSection) return;
 
   let chartsInit = false;
@@ -1539,7 +2203,7 @@ function observeCharts() {
         observer.unobserve(statsSection);
       }
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.15 });
 
   observer.observe(statsSection);
 }
@@ -1657,6 +2321,7 @@ function initTopCitedPapers() {
             <button class="citation-tab-btn top-citation-tab-btn" data-style="mla" data-index="${index}">MLA</button>
             <button class="citation-tab-btn top-citation-tab-btn" data-style="chicago" data-index="${index}">Chicago</button>
             <button class="citation-tab-btn top-citation-tab-btn" data-style="ieee" data-index="${index}">IEEE</button>
+            <button class="citation-tab-btn top-citation-tab-btn" data-style="vancouver" data-index="${index}">Vancouver</button>
           </div>
           <div class="citation-content-area">
             <div class="citation-text-box" id="top-citation-text-${index}">Loading...</div>

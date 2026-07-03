@@ -36,7 +36,9 @@
       <div class="header-logos">
         <!-- Left: JISCE Logo -->
         <div class="logo-item logo-left">
-          <img src="jisce_logo.png" alt="JIS College of Engineering Logo" class="header-logo-img" id="jisce-logo" />
+          <a href="https://www.jiscollege.ac.in/" target="_blank" rel="noopener noreferrer">
+            <img src="jisce_logo.png" alt="JIS College of Engineering Logo" class="header-logo-img" id="jisce-logo" />
+          </a>
         </div>
 
         <!-- Center: Scholar Link Logo -->
@@ -47,7 +49,9 @@
 
         <!-- Right: JIS Group Logo -->
         <div class="logo-item logo-right">
-          <img src="jis_group_logo.png" alt="JIS Group Logo" class="header-logo-img" id="jis-group-logo" />
+          <a href="https://www.jisgroup.org/" target="_blank" rel="noopener noreferrer">
+            <img src="jis_group_logo.png" alt="JIS Group Logo" class="header-logo-img" id="jis-group-logo" />
+          </a>
         </div>
       </div>
 
@@ -98,7 +102,7 @@
         <ul class="nav-menu" id="nav-menu" role="menubar">
           <li role="none"><a href="#home" class="nav-link active" role="menuitem">Home</a></li>
           <li role="none"><a href="#about" class="nav-link" role="menuitem">About</a></li>
-          <li role="none"><a href="#stats" class="nav-link" role="menuitem">Analytics</a></li>
+          <li role="none"><a href="#analytics" class="nav-link" role="menuitem">Analytics</a></li>
           <li role="none"><a href="#domains" class="nav-link" role="menuitem">Domains</a></li>
           <li role="none"><a href="#top-cited" class="nav-link nav-highlight" role="menuitem">Top Cited</a></li>
           <li role="none"><a href="#resources" class="nav-link" role="menuitem">Resources</a></li>
@@ -237,47 +241,6 @@
     </div>
   </section>
 
-  <!-- ==================== STATISTICS DASHBOARD ==================== -->
-  <section id="stats" class="stats-section section" aria-labelledby="stats-heading">
-    <div class="section-container">
-      <div class="section-header">
-        <span class="section-badge">Data Insights</span>
-        <h2 id="stats-heading" class="section-title">Research Analytics</h2>
-        <div class="section-divider"></div>
-        <p class="section-description">Interactive visualizations of our research portfolio and citation landscape.</p>
-      </div>
-
-      <div class="charts-grid">
-        <div class="chart-card glass-card" id="chart-card-domains">
-          <h3 class="chart-title"><i class="fas fa-chart-pie"></i> Papers by Domain</h3>
-          <div class="chart-container">
-            <canvas id="donutChart" aria-label="Papers by domain donut chart"></canvas>
-          </div>
-        </div>
-
-        <div class="chart-card glass-card" id="chart-card-citations">
-          <h3 class="chart-title"><i class="fas fa-chart-bar"></i> Citations by Domain</h3>
-          <div class="chart-container">
-            <canvas id="barChart" aria-label="Citation distribution bar chart"></canvas>
-          </div>
-        </div>
-
-        <div class="chart-card glass-card" id="chart-card-yearly">
-          <h3 class="chart-title"><i class="fas fa-chart-bar"></i> Publications by Year</h3>
-          <div class="chart-container">
-            <canvas id="yearlyPublicationsChart" aria-label="Publications by year bar chart"></canvas>
-          </div>
-        </div>
-
-        <div class="chart-card glass-card" id="chart-card-growth">
-          <h3 class="chart-title"><i class="fas fa-chart-line"></i> Research Growth (Cumulative)</h3>
-          <div class="chart-container">
-            <canvas id="lineChart" aria-label="Research growth line chart"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- ==================== DOMAINS SECTION ==================== -->
   <section id="domains" class="domains-section section" aria-labelledby="domains-heading">
@@ -291,36 +254,10 @@
 
       <!-- Domain Search & Filters -->
       <div class="domain-filter-controls">
-        <div class="domain-search-wrapper">
+        <div class="domain-search-wrapper" style="width: 100%; max-width: 600px; margin: 0 auto;">
           <i class="fas fa-search domain-search-icon"></i>
           <input type="text" id="domain-select-search"
             placeholder="Search research domains (e.g., medical, power, vlsi)..." aria-label="Search domains" />
-        </div>
-
-        <!-- Category Filter Bar -->
-        <div class="category-filter-bar" id="category-filter-bar" role="tablist"
-          aria-label="Filter domains by category">
-          <button class="category-filter-btn active" data-category="all" role="tab" aria-selected="true">
-            <i class="fas fa-th"></i> All Categories
-          </button>
-          <button class="category-filter-btn" data-category="healthcare" role="tab" aria-selected="false">
-            <i class="fas fa-heartbeat"></i> Healthcare
-          </button>
-          <button class="category-filter-btn" data-category="ml" role="tab" aria-selected="false">
-            <i class="fas fa-brain"></i> Machine Learning
-          </button>
-          <button class="category-filter-btn" data-category="image" role="tab" aria-selected="false">
-            <i class="fas fa-image"></i> Image & Signal
-          </button>
-          <button class="category-filter-btn" data-category="remote" role="tab" aria-selected="false">
-            <i class="fas fa-satellite"></i> Remote Sensing
-          </button>
-          <button class="category-filter-btn" data-category="iot" role="tab" aria-selected="false">
-            <i class="fas fa-network-wired"></i> IoT & Networking
-          </button>
-          <button class="category-filter-btn" data-category="ds" role="tab" aria-selected="false">
-            <i class="fas fa-robot"></i> Data Science
-          </button>
         </div>
       </div>
 
@@ -330,18 +267,21 @@
       </div>
 
       <!-- Active Domain Card Banner -->
-      <div class="domain-info-banner glass-card" id="domain-info-banner" aria-live="polite">
+      <div class="domain-info-banner glass-card" id="domain-info-banner" aria-live="polite" style="display: none;">
         <div class="domain-banner-icon" id="domain-banner-icon"><i class="fas fa-heartbeat"></i></div>
         <div class="domain-banner-text">
           <h3 id="domain-banner-name">Healthcare Analytics</h3>
           <p id="domain-banner-desc">Explore AI-driven breakthroughs in medical imaging, diagnostics, and patient care
             research.</p>
         </div>
-        <div class="domain-banner-right">
+        <div class="domain-banner-right" style="display: flex; gap: 10px; align-items: center;">
           <div class="domain-banner-stat">
             <span class="domain-paper-count" id="domain-paper-count">3</span>
             <span>Papers</span>
           </div>
+          <button class="btn btn-secondary hide-papers-btn" id="hide-papers-btn" aria-label="Hide papers list" style="background: rgba(246, 201, 14, 0.15); color: var(--accent-dark); border: 1px solid rgba(246, 201, 14, 0.3);">
+            <i class="fas fa-eye-slash"></i> Hide Papers
+          </button>
           <button class="btn btn-secondary back-to-domains-btn" id="back-to-domains-top-btn"
             aria-label="Back to domains list">
             <i class="fas fa-arrow-up"></i> Back to Domains
@@ -349,8 +289,16 @@
         </div>
       </div>
 
+      <!-- Subdomain Tabs (Dynamic based on selected main domain) -->
+      <div class="subdomain-tabs-wrapper" id="subdomain-tabs-wrapper" style="display: none;">
+        <span class="subdomain-filter-label"><i class="fas fa-sitemap"></i> Filter by Subdomain:</span>
+        <div class="subdomain-tabs" id="subdomain-tabs" role="tablist" aria-label="Subdomain filters">
+          <!-- Injected dynamically by JS -->
+        </div>
+      </div>
+
       <!-- Year Tabs (Dynamic based on selected domain) -->
-      <div class="year-tabs-wrapper">
+      <div class="year-tabs-wrapper" style="display: none;">
         <span class="year-filter-label"><i class="fas fa-filter"></i> Filter by Year:</span>
         <div class="year-tabs" id="year-tabs" role="tablist" aria-label="Year filters">
           <!-- Injected dynamically by JS -->
@@ -358,13 +306,16 @@
       </div>
 
       <!-- Papers Panel -->
-      <div id="papers-panel" class="papers-panel" role="tabpanel" aria-label="Research papers">
+      <div id="papers-panel" class="papers-panel" role="tabpanel" aria-label="Research papers" style="display: none;">
         <div class="papers-grid" id="papers-grid">
           <!-- Papers injected by JS -->
         </div>
 
         <!-- Action Row under Papers -->
-        <div class="papers-action-row">
+        <div class="papers-action-row" style="display: flex; gap: 12px; justify-content: center; align-items: center;">
+          <button class="btn btn-secondary hide-papers-btn" id="hide-papers-bottom-btn" style="background: rgba(246, 201, 14, 0.15); color: var(--accent-dark); border: 1px solid rgba(246, 201, 14, 0.3);">
+            <i class="fas fa-eye-slash"></i> Hide Papers List
+          </button>
           <button class="btn btn-secondary back-to-domains-btn" id="back-to-domains-bottom-btn">
             <i class="fas fa-arrow-up"></i> Back to Domains List
           </button>
@@ -405,7 +356,63 @@
     </div>
   </section>
 
+  <!-- ==================== RESEARCH ANALYTICS SECTION ==================== -->
+  <section id="analytics" class="analytics-section section" aria-labelledby="analytics-heading">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">Insights</span>
+        <h2 id="analytics-heading" class="section-title">Research Analytics</h2>
+        <div class="section-divider"></div>
+        <p class="section-description">Detailed quantitative visualization of publications, citation contributions, and domain distribution.</p>
+      </div>
 
+      <div class="analytics-grid">
+        <!-- Figure 1: Publications by Year -->
+        <div class="analytics-card glass-card reveal">
+          <div class="chart-header">
+            <h3><i class="fas fa-chart-line"></i> Publications by Year</h3>
+            <span class="chart-meta">Overall Growth Trends (till June 2026)</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart-year"></canvas>
+          </div>
+        </div>
+
+        <!-- Figure 2: Scopus Indexed Publications Category Wise -->
+        <div class="analytics-card glass-card reveal">
+          <div class="chart-header">
+            <h3><i class="fas fa-chart-bar"></i> Publication Types</h3>
+            <span class="chart-meta">Scopus Indexed Categories</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart-category"></canvas>
+          </div>
+        </div>
+
+        <!-- Figure 3: Publications made by Domain (Take top 10) -->
+        <div class="analytics-card glass-card reveal">
+          <div class="chart-header">
+            <h3><i class="fas fa-chart-pie"></i> Publications by Research Domain</h3>
+            <span class="chart-meta">Top 10 Consolidated Areas</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart-domain"></canvas>
+          </div>
+        </div>
+
+        <!-- Figure 4: Faculties with above 25 Scopus Indexed publications -->
+        <div class="analytics-card glass-card reveal">
+          <div class="chart-header">
+            <h3><i class="fas fa-user-graduate"></i> Top Faculty Contributors</h3>
+            <span class="chart-meta">Faculties with >25 Publications</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart-faculty"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ==================== RESOURCES SECTION ==================== -->
   <section id="resources" class="resources-section section" aria-labelledby="resources-heading">
@@ -788,6 +795,7 @@
           <li><a href="#about"><i class="fas fa-chevron-right"></i> About</a></li>
           <li><a href="#domains"><i class="fas fa-chevron-right"></i> Domains</a></li>
           <li><a href="#top-cited"><i class="fas fa-chevron-right"></i> Top Cited</a></li>
+          <li><a href="#analytics"><i class="fas fa-chevron-right"></i> Analytics</a></li>
           <li><a href="#resources"><i class="fas fa-chevron-right"></i> Resources</a></li>
           <li><a href="#committee"><i class="fas fa-chevron-right"></i> Committee</a></li>
           <li><a href="#contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
@@ -834,7 +842,7 @@
 
   <!-- Custom JS -->
   <script src="papers_data.js"></script>
-  <script src="script.js"></script>
+  <script src="script.js?v=4"></script>
 </body>
 
 </html>
